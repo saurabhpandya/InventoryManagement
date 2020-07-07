@@ -30,7 +30,7 @@ public class MyUserDetailsService implements UserDetailsService {
         Set<? extends GrantedAuthority> grantedAuthorities;
 
         if (usersMaster.getUserType() == 1) {
-            grantedAuthorities = ApplicationUserRole.USER.getGrantedAuthorities();
+            grantedAuthorities = ApplicationUserRole.ADMIN.getGrantedAuthorities();
         } else {
             grantedAuthorities = ApplicationUserRole.USER.getGrantedAuthorities();
         }

@@ -1,18 +1,19 @@
 package com.inventorymanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.inventorymanagement.model.base.Auditable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
-@Entity(name = "product_varient_mapping")
+@Entity(name = "product_variant_mapping")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductVariantMapping extends Auditable<String> {
     @Id
-    private int id;
-    @Column(name = "product_id")
-    private int productId;
-    private double size;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+    @Column(name = "p_id")
+    private Integer productId;
+    private String size;
     private String color;
     private int quantity;
     private double price;
@@ -20,27 +21,30 @@ public class ProductVariantMapping extends Auditable<String> {
     private boolean deleted;
     private boolean blocked;
 
-    public int getId() {
+    public ProductVariantMapping() {
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getProductId() {
+    public Integer getProductId() {
         return productId;
     }
 
-    public void setProductId(int productId) {
+    public void setProductId(Integer productId) {
         this.productId = productId;
     }
 
-    public double getSize() {
+    public String getSize() {
         return size;
     }
 
-    public void setSize(double size) {
+    public void setSize(String size) {
         this.size = size;
     }
 
@@ -97,7 +101,7 @@ public class ProductVariantMapping extends Auditable<String> {
         final StringBuilder sb = new StringBuilder("ProductVariantMapping{");
         sb.append("id=").append(id);
         sb.append(", productId=").append(productId);
-        sb.append(", size=").append(size);
+        sb.append(", size='").append(size).append('\'');
         sb.append(", color='").append(color).append('\'');
         sb.append(", quantity=").append(quantity);
         sb.append(", price=").append(price);

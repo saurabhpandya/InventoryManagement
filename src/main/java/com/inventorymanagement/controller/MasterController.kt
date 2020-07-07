@@ -9,27 +9,13 @@ import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_CURRENC
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_CURRENCY_GET
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_CURRENCY_SAVE
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_CURRENCY_UPDATE
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_CUSTOMER
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_CUSTOMER_DELETE
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_CUSTOMER_GET
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_CUSTOMER_SAVE
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_CUSTOMER_UPDATE
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_LOCATION
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_LOCATION_DELETE
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_LOCATION_GET
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_LOCATION_SAVE
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_LOCATION_UPDATE
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_MASTER_CATEGORY
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_MASTER_CURRENCY
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_MASTER_PRODUCT
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_MASTER_PRODUCT_VARIANT
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_MASTER_SUB_CATEGORY
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_MASTER_USERTYPE
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_ORDER
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_ORDER_DELETE
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_ORDER_GET
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_ORDER_SAVE
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_ORDER_UPDATE
+import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_PRODUCT_BY_SUBCATID
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_PRODUCT_DELETE
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_PRODUCT_GET
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_PRODUCT_SAVE
@@ -38,15 +24,12 @@ import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_PRODUCT
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_PRODUCT_VARIANT_GET
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_PRODUCT_VARIANT_SAVE
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_PRODUCT_VARIANT_UPDATE
+import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_SUB_CATEGORY_BY_CAT_ID
+import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_SUB_CATEGORY_BY_SUBCAT_ID
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_SUB_CATEGORY_DELETE
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_SUB_CATEGORY_GET
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_SUB_CATEGORY_SAVE
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_SUB_CATEGORY_UPDATE
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_SUPPLIER
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_SUPPLIER_DELETE
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_SUPPLIER_GET
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_SUPPLIER_SAVE
-import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_SUPPLIER_UPDATE
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_USERTYPE_DELETE
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_USERTYPE_GET
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_USERTYPE_SAVE
@@ -59,30 +42,14 @@ import com.inventorymanagement.constants.Constants.Companion.msg_currency_delete
 import com.inventorymanagement.constants.Constants.Companion.msg_currency_exist
 import com.inventorymanagement.constants.Constants.Companion.msg_currency_saved
 import com.inventorymanagement.constants.Constants.Companion.msg_currency_updated
-import com.inventorymanagement.constants.Constants.Companion.msg_customer_deleted
-import com.inventorymanagement.constants.Constants.Companion.msg_customer_exist
-import com.inventorymanagement.constants.Constants.Companion.msg_customer_saved
-import com.inventorymanagement.constants.Constants.Companion.msg_customer_updated
-import com.inventorymanagement.constants.Constants.Companion.msg_location_deleted
-import com.inventorymanagement.constants.Constants.Companion.msg_location_exist
-import com.inventorymanagement.constants.Constants.Companion.msg_location_saved
-import com.inventorymanagement.constants.Constants.Companion.msg_location_updated
 import com.inventorymanagement.constants.Constants.Companion.msg_no_category_found
 import com.inventorymanagement.constants.Constants.Companion.msg_no_change_updated
 import com.inventorymanagement.constants.Constants.Companion.msg_no_currency_found
-import com.inventorymanagement.constants.Constants.Companion.msg_no_customer_found
-import com.inventorymanagement.constants.Constants.Companion.msg_no_location_found
-import com.inventorymanagement.constants.Constants.Companion.msg_no_order_found
 import com.inventorymanagement.constants.Constants.Companion.msg_no_product_found
 import com.inventorymanagement.constants.Constants.Companion.msg_no_product_variant_found
 import com.inventorymanagement.constants.Constants.Companion.msg_no_sub_category_found
-import com.inventorymanagement.constants.Constants.Companion.msg_no_supplier_found
 import com.inventorymanagement.constants.Constants.Companion.msg_no_user_type_found
 import com.inventorymanagement.constants.Constants.Companion.msg_no_users_found
-import com.inventorymanagement.constants.Constants.Companion.msg_order_deleted
-import com.inventorymanagement.constants.Constants.Companion.msg_order_exist
-import com.inventorymanagement.constants.Constants.Companion.msg_order_saved
-import com.inventorymanagement.constants.Constants.Companion.msg_order_updated
 import com.inventorymanagement.constants.Constants.Companion.msg_product_deleted
 import com.inventorymanagement.constants.Constants.Companion.msg_product_exist
 import com.inventorymanagement.constants.Constants.Companion.msg_product_saved
@@ -95,10 +62,6 @@ import com.inventorymanagement.constants.Constants.Companion.msg_sub_category_de
 import com.inventorymanagement.constants.Constants.Companion.msg_sub_category_exist
 import com.inventorymanagement.constants.Constants.Companion.msg_sub_category_saved
 import com.inventorymanagement.constants.Constants.Companion.msg_sub_category_updated
-import com.inventorymanagement.constants.Constants.Companion.msg_supplier_deleted
-import com.inventorymanagement.constants.Constants.Companion.msg_supplier_exist
-import com.inventorymanagement.constants.Constants.Companion.msg_supplier_saved
-import com.inventorymanagement.constants.Constants.Companion.msg_supplier_updated
 import com.inventorymanagement.constants.Constants.Companion.msg_user_type_deleted
 import com.inventorymanagement.constants.Constants.Companion.msg_user_type_exist
 import com.inventorymanagement.constants.Constants.Companion.msg_user_type_saved
@@ -355,8 +318,29 @@ class MasterController {
         val productBaseResponse = BaseResponse<ProductMaster>()
         try {
             val productMaster = productMasterRepo?.findById(id)
-            if (!productMaster?.isEmpty!!) {
+            println("getProductById::$productMaster")
+
+            if (productMaster?.isPresent != null) {
                 productBaseResponse.data = productMaster.get()
+                println("getProductById::${productMaster.get()}")
+
+            } else {
+                productBaseResponse.errorResponse = ErrorResponse().getErrorResponse(100, msg_no_product_found)
+            }
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+            productBaseResponse.errorResponse = ErrorResponse().getErrorResponse(100, msg_no_product_found)
+        }
+        return productBaseResponse
+    }
+
+    @GetMapping(ENDPOINT_PRODUCT_BY_SUBCATID)
+    fun getProductBySubCatId(@PathVariable("subCatId") subCatId: Int): BaseResponse<ArrayList<ProductMaster>> {
+        val productBaseResponse = BaseResponse<ArrayList<ProductMaster>>()
+        try {
+            val productMaster = productMasterRepo?.findProductsBySubCat(subCatId)
+            if (productMaster != null && productMaster.isNotEmpty()) {
+                productBaseResponse.data = productMaster
             } else {
                 productBaseResponse.errorResponse = ErrorResponse().getErrorResponse(100, msg_no_product_found)
             }
@@ -376,7 +360,8 @@ class MasterController {
             if (productMaster == null) {
                 // type is not exist
                 try {
-                    productMasterRepo?.save(saveProductMaster)
+                    val savedData = productMasterRepo?.save(saveProductMaster)
+                    println("saveProduct:: $savedData")
                     saveProductBaseResponse.data = CommonResponse().getCommonResponse(msg_product_saved)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -486,6 +471,44 @@ class MasterController {
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()
             subCatBaseResponse.errorResponse = ErrorResponse().getErrorResponse(100, msg_no_sub_category_found)
+        }
+        return subCatBaseResponse
+    }
+
+    @GetMapping(ENDPOINT_SUB_CATEGORY_BY_CAT_ID)
+    fun getSubCategoryByCatId(@PathVariable("catId") catId: Int): BaseResponse<ArrayList<SubCategoryMaster>> {
+        val subCatBaseResponse = BaseResponse<ArrayList<SubCategoryMaster>>()
+        try {
+            val subCategory = subCategoryMasterRepo?.findByCatId(catId)
+            if (!subCategory?.isNullOrEmpty()!!) {
+                subCatBaseResponse.data = subCategory
+            } else {
+                subCatBaseResponse.errorResponse = ErrorResponse().getErrorResponse(100, msg_no_sub_category_found)
+
+            }
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+            subCatBaseResponse.errorResponse = ErrorResponse().getErrorResponse(100, msg_no_sub_category_found)
+        }
+        return subCatBaseResponse
+    }
+
+    @GetMapping(ENDPOINT_SUB_CATEGORY_BY_SUBCAT_ID)
+    fun getSubCategoryBySubCat(@PathVariable("catId") catId: Int, @PathVariable("subCatId") subCatId: Int):
+            BaseResponse<ArrayList<SubCategoryMaster>> {
+        val subCatBaseResponse = BaseResponse<ArrayList<SubCategoryMaster>>()
+        try {
+            val subCategory = subCategoryMasterRepo?.findSubCatOfSubCat(catId, subCatId)
+            if (!subCategory?.isNullOrEmpty()!!) {
+                subCatBaseResponse.data = subCategory
+            } else {
+                subCatBaseResponse.data = ArrayList<SubCategoryMaster>()
+//                        ErrorResponse().getErrorResponse(100, msg_no_sub_category_found)
+            }
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+            subCatBaseResponse.errorResponse =
+                    ErrorResponse().getErrorResponse(100, msg_no_sub_category_found)
         }
         return subCatBaseResponse
     }

@@ -1,35 +1,44 @@
 package com.inventorymanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.inventorymanagement.model.base.Auditable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
-@Entity
+@Entity(name = "product_master")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductMaster extends Auditable<String> {
 
     @Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
     private String name;
     private String description;
     @Column(name = "sub_cat_id")
-    private int subCatId;
+    private Integer subCatId;
     @Column(name = "supplier_id")
-    private int supplierId;
+    private Integer supplierId;
     private double price;
     @Column(name = "currency_id")
-    private int currencyId;
+    private Integer currencyId;
     private int quantity;
     private boolean active;
     private boolean deleted;
     private boolean blocked;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "p_id", referencedColumnName = "id")
+    private List<ProductVariantMapping> productVariantMapping = new ArrayList<>();
 
-    public int getId() {
+    public ProductMaster() {
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -49,19 +58,19 @@ public class ProductMaster extends Auditable<String> {
         this.description = description;
     }
 
-    public int getSubCatId() {
+    public Integer getSubCatId() {
         return subCatId;
     }
 
-    public void setSubCatId(int subCatId) {
+    public void setSubCatId(Integer subCatId) {
         this.subCatId = subCatId;
     }
 
-    public int getSupplierId() {
+    public Integer getSupplierId() {
         return supplierId;
     }
 
-    public void setSupplierId(int supplierId) {
+    public void setSupplierId(Integer supplierId) {
         this.supplierId = supplierId;
     }
 
@@ -73,11 +82,11 @@ public class ProductMaster extends Auditable<String> {
         this.price = price;
     }
 
-    public int getCurrencyId() {
+    public Integer getCurrencyId() {
         return currencyId;
     }
 
-    public void setCurrencyId(int currencyId) {
+    public void setCurrencyId(Integer currencyId) {
         this.currencyId = currencyId;
     }
 
@@ -113,6 +122,14 @@ public class ProductMaster extends Auditable<String> {
         this.blocked = blocked;
     }
 
+    public List<ProductVariantMapping> getProductVariantMapping() {
+        return productVariantMapping;
+    }
+
+    public void setProductVariantMapping(List<ProductVariantMapping> productVariantMapping) {
+        this.productVariantMapping = productVariantMapping;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ProductMaster{");
@@ -127,6 +144,7 @@ public class ProductMaster extends Auditable<String> {
         sb.append(", active=").append(active);
         sb.append(", deleted=").append(deleted);
         sb.append(", blocked=").append(blocked);
+        sb.append(", productVariantMapping=").append(productVariantMapping);
         sb.append('}');
         return sb.toString();
     }
