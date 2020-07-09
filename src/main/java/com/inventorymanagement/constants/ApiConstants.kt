@@ -18,7 +18,7 @@ class ApiConstants {
         const val ENDPOINT_MASTER_CATEGORY = "category"
         const val ENDPOINT_CATEGORY_GET = "$ENDPOINT_MASTER_CATEGORY/{id}"
         const val ENDPOINT_CATEGORY_SAVE = "$ENDPOINT_MASTER_CATEGORY/saveCategory"
-        const val ENDPOINT_CATEGORY_UPDATE = "$ENDPOINT_MASTER_CATEGORY/udpateCategory"
+        const val ENDPOINT_CATEGORY_UPDATE = "$ENDPOINT_MASTER_CATEGORY/updateCategory"
         const val ENDPOINT_CATEGORY_DELETE = "$ENDPOINT_MASTER_CATEGORY/deleteCategory"
 
         const val ENDPOINT_MASTER_SUB_CATEGORY = "subCategory"

@@ -670,7 +670,7 @@ class MasterController {
         return saveCategoryBaseResponse
     }
 
-    @PutMapping(ENDPOINT_CATEGORY_UPDATE)
+    @PostMapping(ENDPOINT_CATEGORY_UPDATE)
     fun updateCategory(@RequestBody updateCategory: CategoryMaster): BaseResponse<CommonResponse> {
         val updateCateogryBaseResponse = BaseResponse<CommonResponse>()
         var typeValidatorPair = updateCategory.nameValid()
