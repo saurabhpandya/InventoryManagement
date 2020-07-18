@@ -1,6 +1,7 @@
 package com.inventorymanagement.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.inventorymanagement.model.base.Auditable;
 
 import javax.persistence.*;
@@ -27,8 +28,10 @@ public class ProductMaster extends Auditable<String> {
     private boolean active;
     private boolean deleted;
     private boolean blocked;
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "p_id", referencedColumnName = "id")
+    //    @OneToMany(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "p_id", referencedColumnName = "id")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Transient
     private List<ProductVariantMapping> productVariantMapping = new ArrayList<>();
 
     public ProductMaster() {

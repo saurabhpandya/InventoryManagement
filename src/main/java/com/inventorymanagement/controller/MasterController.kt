@@ -14,6 +14,7 @@ import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_MASTER_
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_MASTER_PRODUCT
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_MASTER_PRODUCT_VARIANT
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_MASTER_SUB_CATEGORY
+import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_MASTER_SUB_CATEGORY_LEAFS
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_MASTER_USERTYPE
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_PRODUCT_BY_SUBCATID
 import com.inventorymanagement.constants.ApiConstants.Companion.ENDPOINT_PRODUCT_DELETE
@@ -319,10 +320,13 @@ class MasterController {
         try {
             val productMaster = productMasterRepo?.findById(id)
             println("getProductById::$productMaster")
-
             if (productMaster?.isPresent != null) {
-                productBaseResponse.data = productMaster.get()
-                println("getProductById::${productMaster.get()}")
+                val product = productMaster.get()
+                println("getProductById::${product}")
+                val productVariants = productVariantRepo?.findByPId(product.id)
+                println("productVariants::${productVariants}")
+                product.productVariantMapping = productVariants
+                productBaseResponse.data = product
 
             } else {
                 productBaseResponse.errorResponse = ErrorResponse().getErrorResponse(100, msg_no_product_found)
@@ -386,9 +390,8 @@ class MasterController {
         val updateProductBaseResponse = BaseResponse<CommonResponse>()
         var productValidatorPair = updateProductMaster.nameValid()
         if (productValidatorPair.first) {
-            val productMaster = productMasterRepo?.findByName(updateProductMaster.name)
-            if (productMaster == null) {
-                // type is not exist
+            val productMasterOptional = productMasterRepo?.findById(updateProductMaster.id)
+            if (productMasterOptional!!.isPresent) {
                 try {
                     productMasterRepo?.save(updateProductMaster)
                     updateProductBaseResponse.data = CommonResponse().getCommonResponse(msg_product_updated)
@@ -399,13 +402,8 @@ class MasterController {
                     updateProductBaseResponse.errorResponse = errorResponse
                 }
             } else {
-                // type is exist
-                if (updateProductMaster.id.equals(productMaster.id)) {
-                    updateProductBaseResponse.data = CommonResponse().getCommonResponse(msg_no_change_updated)
-                } else {
-                    val errorResponse = ErrorResponse().getErrorResponse(100, msg_product_exist)
-                    updateProductBaseResponse.errorResponse = errorResponse
-                }
+                val errorResponse = ErrorResponse().getErrorResponse(100, msg_no_product_found)
+                updateProductBaseResponse.errorResponse = errorResponse
             }
         } else {
             val errorResponse = ErrorResponse().getErrorResponse(100, productValidatorPair.second)
@@ -448,7 +446,19 @@ class MasterController {
     @GetMapping(ENDPOINT_MASTER_SUB_CATEGORY)
     fun getSubCategories(): BaseResponse<MutableList<SubCategoryMaster>> {
         val subCatListBaseResponse = BaseResponse<MutableList<SubCategoryMaster>>()
-        val subCatList = subCategoryMasterRepo?.findAll()
+        val subCatList = subCategoryMasterRepo?.findAllForProduct()
+        if (subCatList.isNullOrEmpty()) {
+            subCatListBaseResponse.errorResponse = ErrorResponse().getErrorResponse(100, msg_no_sub_category_found)
+        } else {
+            subCatListBaseResponse.data = subCatList
+        }
+        return subCatListBaseResponse
+    }
+
+    @GetMapping(ENDPOINT_MASTER_SUB_CATEGORY_LEAFS)
+    fun getSubCategoryLeafs(): BaseResponse<MutableList<SubCategoryMaster>> {
+        val subCatListBaseResponse = BaseResponse<MutableList<SubCategoryMaster>>()
+        val subCatList = subCategoryMasterRepo?.findSubCatLeaf()
         if (subCatList.isNullOrEmpty()) {
             subCatListBaseResponse.errorResponse = ErrorResponse().getErrorResponse(100, msg_no_sub_category_found)
         } else {
@@ -483,8 +493,8 @@ class MasterController {
             if (!subCategory?.isNullOrEmpty()!!) {
                 subCatBaseResponse.data = subCategory
             } else {
-                subCatBaseResponse.errorResponse = ErrorResponse().getErrorResponse(100, msg_no_sub_category_found)
-
+                subCatBaseResponse.data = ArrayList<SubCategoryMaster>()
+//                subCatBaseResponse.errorResponse = ErrorResponse().getErrorResponse(100, msg_no_sub_category_found)
             }
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()
@@ -518,10 +528,11 @@ class MasterController {
         val saveSubCatBaseResponse = BaseResponse<CommonResponse>()
         var subCatValidatorPair = saveSubCategory.nameValid()
         if (subCatValidatorPair.first) {
-            val subCatMaster = subCategoryMasterRepo?.findByName(saveSubCategory.name)
+            val subCatMaster = subCategoryMasterRepo?.findByName(saveSubCategory.name.trim())
             if (subCatMaster == null) {
                 // type is not exist
                 try {
+                    saveSubCategory.isActive = true
                     subCategoryMasterRepo?.save(saveSubCategory)
                     println(msg_category_saved)
                     saveSubCatBaseResponse.data = CommonResponse().getCommonResponse(msg_sub_category_saved)
@@ -544,7 +555,7 @@ class MasterController {
         return saveSubCatBaseResponse
     }
 
-    @PutMapping(ENDPOINT_SUB_CATEGORY_UPDATE)
+    @PostMapping(ENDPOINT_SUB_CATEGORY_UPDATE)
     fun updateSubCategory(@RequestBody updateSubCategory: SubCategoryMaster): BaseResponse<CommonResponse> {
         val updateSubCatBaseResponse = BaseResponse<CommonResponse>()
         var subCatValidatorPair = updateSubCategory.nameValid()
@@ -553,6 +564,7 @@ class MasterController {
             if (subCatMaster == null) {
                 // type is not exist
                 try {
+                    updateSubCategory.isActive = true
                     subCategoryMasterRepo?.save(updateSubCategory)
                     updateSubCatBaseResponse.data = CommonResponse().getCommonResponse(msg_sub_category_updated)
                 } catch (e: Exception) {
@@ -563,11 +575,25 @@ class MasterController {
                 }
             } else {
                 // type is exist
-                if (updateSubCategory.id.equals(subCatMaster.id)) {
-                    updateSubCatBaseResponse.data = CommonResponse().getCommonResponse(msg_no_change_updated)
+                if (updateSubCategory.catId.equals(subCatMaster.catId)) {
+                    if (updateSubCategory.subCatId.equals(subCatMaster.subCatId)) {
+                        if (updateSubCategory.name.equals(subCatMaster.name)) {
+                            val errorResponse = ErrorResponse().getErrorResponse(100, msg_sub_category_exist)
+                            updateSubCatBaseResponse.errorResponse = errorResponse
+                        } else {
+                            updateSubCategory.isActive = true
+                            subCategoryMasterRepo?.save(updateSubCategory)
+                            updateSubCatBaseResponse.data = CommonResponse().getCommonResponse(msg_sub_category_updated)
+                        }
+                    } else {
+                        updateSubCategory.isActive = true
+                        subCategoryMasterRepo?.save(updateSubCategory)
+                        updateSubCatBaseResponse.data = CommonResponse().getCommonResponse(msg_sub_category_updated)
+                    }
                 } else {
-                    val errorResponse = ErrorResponse().getErrorResponse(100, msg_sub_category_exist)
-                    updateSubCatBaseResponse.errorResponse = errorResponse
+                    updateSubCategory.isActive = true
+                    subCategoryMasterRepo?.save(updateSubCategory)
+                    updateSubCatBaseResponse.data = CommonResponse().getCommonResponse(msg_sub_category_updated)
                 }
 
             }
@@ -644,7 +670,7 @@ class MasterController {
         val saveCategoryBaseResponse = BaseResponse<CommonResponse>()
         var categoryValidatorPair = saveCategory.nameValid()
         if (categoryValidatorPair.first) {
-            val categoryMaster = categoryMasterRepo?.findByName(saveCategory.name)
+            val categoryMaster = categoryMasterRepo?.findByName(saveCategory.name.trim())
             if (categoryMaster == null) {
                 // type is not exist
                 try {
