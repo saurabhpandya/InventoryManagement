@@ -2,6 +2,10 @@ package com.inventorymanagement.controller
 
 import com.inventorymanagement.constants.ApiConstants
 import com.inventorymanagement.constants.Constants
+import com.inventorymanagement.constants.Constants.Companion.msg_enter_valid_data
+import com.inventorymanagement.constants.Constants.Companion.msg_no_supplier_found
+import com.inventorymanagement.constants.Constants.Companion.msg_supplier_exist
+import com.inventorymanagement.constants.Constants.Companion.msg_supplier_saved
 import com.inventorymanagement.extension.getCommonResponse
 import com.inventorymanagement.extension.getErrorResponse
 import com.inventorymanagement.extension.idValid
@@ -53,8 +57,17 @@ class SupplierController {
     fun saveSupplier(@RequestBody saveSupplierMaster: SupplierMaster): BaseResponse<CommonResponse> {
         val saveSupplierBaseResponse = BaseResponse<CommonResponse>()
         try {
-            supplierMasterRepo?.save(saveSupplierMaster)
-            saveSupplierBaseResponse.data = CommonResponse().getCommonResponse(Constants.msg_supplier_saved)
+            if (!saveSupplierMaster.name.isNullOrEmpty()) {
+                val supplierByName = supplierMasterRepo?.findByName(saveSupplierMaster.name)
+                if (supplierByName == null) {
+                    supplierMasterRepo?.save(saveSupplierMaster)
+                    saveSupplierBaseResponse.data = CommonResponse().getCommonResponse(msg_supplier_saved)
+                } else {
+                    saveSupplierBaseResponse.errorResponse = ErrorResponse().getErrorResponse(0, msg_supplier_exist)
+                }
+            } else {
+                saveSupplierBaseResponse.errorResponse = ErrorResponse().getErrorResponse(0, msg_enter_valid_data)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             println(e.localizedMessage)
@@ -64,30 +77,25 @@ class SupplierController {
         return saveSupplierBaseResponse
     }
 
-    @PutMapping(ApiConstants.ENDPOINT_SUPPLIER_UPDATE)
+    @PostMapping(ApiConstants.ENDPOINT_SUPPLIER_UPDATE)
     fun updateSupplier(@RequestBody updateSupplierMaster: SupplierMaster): BaseResponse<CommonResponse> {
         val updateSupplierBaseResponse = BaseResponse<CommonResponse>()
-
-        val supplierMasterOptional = supplierMasterRepo?.findById(updateSupplierMaster.id)
-        if (supplierMasterOptional == null) {
-            // type is not exist
+        if (updateSupplierMaster.id > 0) {
             try {
-                supplierMasterRepo?.save(updateSupplierMaster)
-                updateSupplierBaseResponse.data = CommonResponse().getCommonResponse(Constants.msg_supplier_updated)
+                val supplierMasterOptional = supplierMasterRepo?.findById(updateSupplierMaster.id)
+                if (supplierMasterOptional != null && supplierMasterOptional.isPresent) {
+                    supplierMasterRepo?.save(updateSupplierMaster)
+                    updateSupplierBaseResponse.data = CommonResponse().getCommonResponse(Constants.msg_supplier_updated)
+                } else {
+                    updateSupplierBaseResponse.errorResponse = ErrorResponse().getErrorResponse(0, msg_no_supplier_found)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
-                println(e.localizedMessage)
                 val errorResponse = ErrorResponse().getErrorResponse(0, e.localizedMessage)
                 updateSupplierBaseResponse.errorResponse = errorResponse
             }
         } else {
-            // type is exist
-            if (updateSupplierMaster.id.equals(supplierMasterOptional.get().id)) {
-                updateSupplierBaseResponse.data = CommonResponse().getCommonResponse(Constants.msg_no_change_updated)
-            } else {
-                val errorResponse = ErrorResponse().getErrorResponse(100, Constants.msg_supplier_exist)
-                updateSupplierBaseResponse.errorResponse = errorResponse
-            }
+            updateSupplierBaseResponse.errorResponse = ErrorResponse().getErrorResponse(0, msg_enter_valid_data)
         }
         return updateSupplierBaseResponse
     }
@@ -98,7 +106,7 @@ class SupplierController {
         var supplierValidatorPair = deleteSupplierMaster.idValid()
         if (supplierValidatorPair.first) {
             val supplierMasterOptional = supplierMasterRepo?.findById(deleteSupplierMaster.id)
-            if (!supplierMasterOptional?.isEmpty!!) {
+            if (supplierMasterOptional != null && supplierMasterOptional.isPresent) {
                 // type is not exist
                 try {
                     val supplierMaster = supplierMasterOptional.get()
